@@ -1,4 +1,4 @@
-// --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
+
 let allBooks = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 const currentUser = localStorage.getItem('currentUser');
@@ -48,7 +48,6 @@ function renderBooks(books) {
     books.forEach(book => {
         const card = document.createElement('div');
         card.className = 'book-card';
-        // КНОПКА "ПОДРОБНЕЕ" УДАЛЕНА, "В КОРЗИНУ" РАСТЯНУТА
         card.innerHTML = `
             <div class="book-cover">
                 <img src="${book.image}" alt="${book.title}" onerror="this.src='https://dummyimage.com/400x600/ccc/fff&text=No+Image'">
@@ -64,7 +63,7 @@ function renderBooks(books) {
     });
 }
 
-// --- СТРАНИЦА ТОВАРА (Осталась на случай прямых переходов, но кнопки к ней нет) ---
+// --- СТРАНИЦА ТОВАРА ---
 async function loadProductPage() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
@@ -121,44 +120,61 @@ function pushToCart(book) {
     cart.push(book);
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCounter();
-    alert(`"${book.title}" добавлена в корзину!`);
+
+    showToast(`✅ "${book.title}" добавлена в корзину!`);
 }
 
 function renderCartPage() {
     const container = document.getElementById('cartContainer');
     const totalEl = document.getElementById('totalSum');
     const checkoutBtn = document.getElementById('openCheckoutBtn');
-    
+
+    if (!container) return; // Защита от ошибок на других страницах
+
     if (cart.length === 0) {
-        container.innerHTML = '<p style="text-align:center; padding:30px;">Корзина пуста</p>';
-        totalEl.innerText = '0';
+        container.innerHTML = `
+            <div style="text-align:center; padding: 60px;">
+                <div style="font-size: 50px; margin-bottom: 20px;">🛒</div>
+                <h3 style="color: var(--text);">Ваша корзина пуста</h3>
+                <p style="color: #999;">Но это легко исправить!</p>
+                <a href="catalog.html" class="btn-main" style="margin-top: 20px;">Перейти в каталог</a>
+            </div>
+        `;
+        if(totalEl) totalEl.innerText = '0';
         if(checkoutBtn) checkoutBtn.style.display = 'none';
         return;
     }
+    
     if(checkoutBtn) checkoutBtn.style.display = 'inline-block';
 
     container.innerHTML = '';
     let total = 0;
+
     cart.forEach((book, index) => {
         total += book.price;
+        
         const row = document.createElement('div');
-        row.className = 'cart-row';
+        row.className = 'cart-item-card'; // Используем новый CSS класс
+        
         row.innerHTML = `
-            <div style="display:flex; align-items:center; gap:15px;">
-                <img src="${book.image}" style="width:50px; height:70px; object-fit:cover; border-radius:5px;">
-                <div>
-                    <b>${book.title}</b><br>
-                    <span style="font-size:0.8rem; color:#888;">${book.author}</span>
-                </div>
+            <img src="${book.image}" class="cart-item-img" alt="${book.title}" onerror="this.src='https://dummyimage.com/400x600/ccc/fff&text=No+Image'">
+            
+            <div class="cart-item-info">
+                <div class="cart-item-title">${book.title}</div>
+                <div class="cart-item-author">${book.author}</div>
             </div>
-            <div style="display:flex; align-items:center; gap:15px;">
-                <b>${book.price} ₽</b>
-                <button onclick="removeFromCart(${index})" style="background:#ff6b6b; color:white; border:none; width:30px; height:30px; border-radius:50%; cursor:pointer;">✕</button>
+            
+            <div class="cart-item-right">
+                <div class="cart-item-price">${book.price} ₽</div>
+                <button class="btn-remove" onclick="removeFromCart(${index})">
+                    Удалить
+                </button>
             </div>
         `;
         container.appendChild(row);
     });
-    totalEl.innerText = total;
+
+    if(totalEl) totalEl.innerText = total;
 }
 
 function removeFromCart(index) {
@@ -256,7 +272,7 @@ function setupCheckoutModal() {
     };
 }
 
-// --- ЛОГИКА АВТОРИЗАЦИИ ---
+// --- АВТОРИЗАЦИЯ ---
 const authForm = document.getElementById('authForm');
 if (authForm) {
     let isLogin = true;
@@ -298,4 +314,22 @@ if (authForm) {
             document.getElementById('message').innerText = data.error;
         }
     });
+    // Функция для уведомления
+function showToast(message) {
+    let toast = document.getElementById('toast-notification');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-notification';
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+    }
+    
+    toast.innerText = message;
+    toast.classList.add('show');
+
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
 }
