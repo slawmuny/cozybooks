@@ -213,10 +213,17 @@ function checkAuthStatus() {
     if (authLink && currentUser) {
         authLink.innerText = currentUser + " (Выход)";
         authLink.href = "#";
-        authLink.onclick = () => { localStorage.clear(); location.reload(); };
+
+        authLink.onclick = (e) => { 
+            e.preventDefault(); 
+
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('currentUserId');
+            
+            location.reload(); 
+        };
     }
 }
-
 function setupFilters() {
     const g = document.getElementById('genreFilter');
     const p = document.getElementById('priceSort');
