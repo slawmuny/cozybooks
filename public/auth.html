@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>CozyBooks - Вход</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">
+            <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+            Cozy<span>Books</span>
+        </a>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="contacts.html">Контакты</a>
+            <a href="cart.html">Корзина</a>
+        </nav>
+    </header>
+
+    <!-- Новый контейнер для центрирования формы -->
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-icon">🔐</div>
+            <h2 id="formTitle" style="color: var(--primary-dark); margin-bottom: 25px;">Вход</h2>
+            
+            <form id="authForm">
+                <input type="text" id="username" placeholder="Ваш логин" required>
+                <input type="password" id="password" placeholder="Пароль" required>
+                <button type="submit" id="submitBtn" class="btn-main" style="width: 100%; margin-top: 15px;">Войти</button>
+            </form>
+
+            <div class="auth-footer">
+                <a href="#" id="toggleAuth">Нет аккаунта? Зарегистрироваться</a>
+            </div>
+            
+            <p id="message" style="color: #e07a5f; margin-top: 15px;"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

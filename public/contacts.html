@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Контакты - CozyBooks</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Яндекс Карты -->
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_ключ&lang=ru_RU" type="text/javascript"></script>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            Cozy<span>Books</span>
+        </a>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="contacts.html" class="active">Контакты</a>
+            <a href="cart.html">Корзина <span id="cart-count">0</span></a>
+            <a href="auth.html" id="authLink">Войти</a>
+        </nav>
+    </header>
+
+    <h1 style="text-align: center; margin-top: 50px; color: var(--text);">Наши контакты</h1>
+
+    <div class="contacts-grid">
+        <div class="contacts-info">
+            <h2 style="margin-top: 0; color: var(--primary-dark);">Свяжитесь с нами</h2>
+            
+            <div class="contact-row">
+                <div class="contact-icon">📍</div>
+                <div class="contact-text">
+                    <h4>Адрес:</h4>
+                    <p>г. Санкт-Петербург, Невский проспект, 28 (Дом Книги)</p>
+                </div>
+            </div>
+
+            <div class="contact-row">
+                <div class="contact-icon">📞</div>
+                <div class="contact-text">
+                    <h4>Телефон:</h4>
+                    <p>+7 (812) 999-00-00</p>
+                </div>
+            </div>
+
+            <div class="contact-row">
+                <div class="contact-icon">📧</div>
+                <div class="contact-text">
+                    <h4>Почта:</h4>
+                    <p>info@cozybooks.spb.ru</p>
+                </div>
+            </div>
+
+            <div class="contact-row">
+                <div class="contact-icon">⏰</div>
+                <div class="contact-text">
+                    <h4>Режим работы:</h4>
+                    <p>Ежедневно с 10:00 до 23:00</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Контейнер для карты с обязательной высотой в CSS -->
+        <div id="map" class="map-box"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
