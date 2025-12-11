@@ -1,45 +1,56 @@
 
 let allBooks = [];
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
 const currentUser = localStorage.getItem('currentUser');
 const currentUserId = localStorage.getItem('currentUserId');
+
+
+const cartKey = currentUserId ? `cart_user_${currentUserId}` : 'cart_guest';
+
+
+let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+
+// ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
     updateCartCounter();
     checkAuthStatus();
 
+
     if (document.getElementById('booksContainer')) {
         fetchBooks();
         setupFilters();
     }
-    
+
+
     if (document.getElementById('productPage')) {
         loadProductPage();
     }
+
 
     if (document.getElementById('cartContainer')) {
         renderCartPage();
         setupCheckoutModal();
     }
-    
+
+
     if (document.getElementById('map')) {
         ymaps.ready(initMap);
     }
 });
 
-// --- API ---
+
 async function fetchBooks() {
     try {
         const res = await fetch('/api/books');
         allBooks = await res.json();
         renderBooks(allBooks);
-    } catch(e) { console.error(e); }
+    } catch (e) { console.error("Ошибка загрузки книг:", e); }
 }
 
 function renderBooks(books) {
     const container = document.getElementById('booksContainer');
     container.innerHTML = '';
-    
+
     if (books.length === 0) {
         container.innerHTML = '<p style="text-align:center; width:100%;">Книги не найдены</p>';
         return;
@@ -55,15 +66,14 @@ function renderBooks(books) {
             <div class="book-title">${book.title}</div>
             <div class="book-author">${book.author}</div>
             <div class="book-price">${book.price} ₽</div>
-            <div class="card-buttons">
-                <button class="btn-cart" onclick="addToCart(${book.id})" style="width: 100%;">В корзину</button>
+            <div class="card-buttons" style="margin-top: auto;">
+                 <button class="btn-main" onclick="addToCart(${book.id})" style="width: 100%;">В корзину</button>
             </div>
         `;
         container.appendChild(card);
     });
 }
 
-// --- СТРАНИЦА ТОВАРА ---
 async function loadProductPage() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
@@ -75,6 +85,7 @@ async function loadProductPage() {
     }
 
     try {
+
         const res = await fetch(`/api/books/${id}`);
         if (!res.ok) throw new Error('Книга не найдена');
         const book = await res.json();
@@ -82,13 +93,12 @@ async function loadProductPage() {
         container.innerHTML = `
             <div class="product-container">
                 <div class="product-left">
-                    <img src="${book.image}" alt="${book.title}" onerror="this.src='https://dummyimage.com/400x600/ccc/fff&text=No+Image'">
+                     <img src="${book.image}" alt="${book.title}" onerror="this.src='https://dummyimage.com/400x600/ccc/fff&text=No+Image'">
                 </div>
                 <div class="product-right">
                     <span class="product-tag">${book.genre}</span>
-                    <h1>${book.title}</h1>
+                    <h1 style="margin-top: 15px;">${book.title}</h1>
                     <div class="author">Автор: ${book.author}</div>
-                    
                     <div class="price" style="margin-top: 40px;">${book.price} ₽</div>
                     
                     <button class="btn-main" onclick="addToCart(${book.id})" style="width: 100%; max-width: 300px;">
@@ -104,12 +114,18 @@ async function loadProductPage() {
     }
 }
 
-// --- КОРЗИНА ---
+
+function saveCartToStorage() {
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+    updateCartCounter();
+}
+
 function addToCart(bookId) {
     if (allBooks.length > 0) {
         const book = allBooks.find(b => b.id === parseInt(bookId));
         if (book) pushToCart(book);
     } else {
+       
         fetch(`/api/books/${bookId}`)
             .then(res => res.json())
             .then(book => pushToCart(book));
@@ -118,10 +134,19 @@ function addToCart(bookId) {
 
 function pushToCart(book) {
     cart.push(book);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCounter();
-
+    saveCartToStorage(); 
     showToast(`✅ "${book.title}" добавлена в корзину!`);
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    saveCartToStorage();
+    renderCartPage();    
+}
+
+function updateCartCounter() {
+    const el = document.getElementById('cart-count');
+    if (el) el.innerText = cart.length;
 }
 
 function renderCartPage() {
@@ -129,115 +154,48 @@ function renderCartPage() {
     const totalEl = document.getElementById('totalSum');
     const checkoutBtn = document.getElementById('openCheckoutBtn');
 
-    if (!container) return; // Защита от ошибок на других страницах
+    if (!container) return;
 
     if (cart.length === 0) {
         container.innerHTML = `
             <div style="text-align:center; padding: 60px;">
                 <div style="font-size: 50px; margin-bottom: 20px;">🛒</div>
                 <h3 style="color: var(--text);">Ваша корзина пуста</h3>
-                <p style="color: #999;">Но это легко исправить!</p>
+                <p style="color: #999;">Самое время выбрать новую книгу!</p>
                 <a href="catalog.html" class="btn-main" style="margin-top: 20px;">Перейти в каталог</a>
             </div>
         `;
-        if(totalEl) totalEl.innerText = '0';
-        if(checkoutBtn) checkoutBtn.style.display = 'none';
+        if (totalEl) totalEl.innerText = '0';
+        if (checkoutBtn) checkoutBtn.style.display = 'none';
         return;
     }
-    
-    if(checkoutBtn) checkoutBtn.style.display = 'inline-block';
+
+    if (checkoutBtn) checkoutBtn.style.display = 'inline-block';
 
     container.innerHTML = '';
     let total = 0;
 
     cart.forEach((book, index) => {
         total += book.price;
-        
         const row = document.createElement('div');
-        row.className = 'cart-item-card'; // Используем новый CSS класс
-        
+        row.className = 'cart-item-card'; // CSS класс из style.css
         row.innerHTML = `
             <img src="${book.image}" class="cart-item-img" alt="${book.title}" onerror="this.src='https://dummyimage.com/400x600/ccc/fff&text=No+Image'">
-            
             <div class="cart-item-info">
                 <div class="cart-item-title">${book.title}</div>
                 <div class="cart-item-author">${book.author}</div>
             </div>
-            
             <div class="cart-item-right">
                 <div class="cart-item-price">${book.price} ₽</div>
-                <button class="btn-remove" onclick="removeFromCart(${index})">
-                    Удалить
-                </button>
+                <button class="btn-remove" onclick="removeFromCart(${index})">Удалить</button>
             </div>
         `;
         container.appendChild(row);
     });
 
-    if(totalEl) totalEl.innerText = total;
+    if (totalEl) totalEl.innerText = total;
 }
 
-function removeFromCart(index) {
-    cart.splice(index, 1);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    renderCartPage();
-    updateCartCounter();
-}
-
-function updateCartCounter() {
-    const el = document.getElementById('cart-count');
-    if(el) el.innerText = cart.length;
-}
-
-// --- КАРТА ---
-function initMap() {
-    if (document.getElementById('map').innerHTML !== "") return;
-
-    const myMap = new ymaps.Map("map", {
-        center: [59.935634, 30.325916],
-        zoom: 14
-    });
-    
-    const myPlacemark = new ymaps.Placemark([59.935634, 30.325916], {
-        balloonContentHeader: "CozyBooks",
-        balloonContentBody: "Санкт-Петербург, Невский пр. 28",
-        balloonContentFooter: "Ждем вас ежедневно!"
-    });
-    
-    myMap.geoObjects.add(myPlacemark);
-}
-
-// --- AUTH & CHECKOUT ---
-function checkAuthStatus() {
-    const authLink = document.getElementById('authLink');
-    if (authLink && currentUser) {
-        authLink.innerText = currentUser + " (Выход)";
-        authLink.href = "#";
-
-        authLink.onclick = (e) => { 
-            e.preventDefault(); 
-
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('currentUserId');
-            
-            location.reload(); 
-        };
-    }
-}
-function setupFilters() {
-    const g = document.getElementById('genreFilter');
-    const p = document.getElementById('priceSort');
-    if(g && p) {
-        const apply = () => {
-            let f = [...allBooks];
-            if(g.value !== 'all') f = f.filter(b => b.genre === g.value);
-            if(p.value === 'asc') f.sort((a,b)=>a.price-b.price);
-            if(p.value === 'desc') f.sort((a,b)=>b.price-a.price);
-            renderBooks(f);
-        };
-        g.onchange = apply; p.onchange = apply;
-    }
-}
 
 function setupCheckoutModal() {
     const modal = document.getElementById('checkoutModal');
@@ -252,9 +210,9 @@ function setupCheckoutModal() {
         }
         modal.style.display = 'block';
     }
-    
+
     document.querySelector('.close').onclick = () => modal.style.display = 'none';
-    
+
     document.getElementById('checkoutForm').onsubmit = async (e) => {
         e.preventDefault();
         const data = {
@@ -265,21 +223,91 @@ function setupCheckoutModal() {
             total: parseInt(document.getElementById('totalSum').innerText),
             date: new Date().toLocaleDateString()
         };
-        
-        await fetch('/api/order', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify(data)
-        });
-        
-        alert('Заказ оформлен! Менеджер свяжется с вами.');
-        cart = [];
-        localStorage.setItem('cart', JSON.stringify(cart));
-        window.location.href = 'index.html';
+
+        try {
+            await fetch('/api/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+
+            alert('Заказ оформлен! Менеджер свяжется с вами.');
+
+            cart = []; 
+            saveCartToStorage(); 
+            
+            window.location.href = 'index.html';
+        } catch (err) {
+            alert('Ошибка оформления заказа');
+            console.error(err);
+        }
     };
 }
 
-// --- АВТОРИЗАЦИЯ ---
+// Всплывающее уведомление
+function showToast(message) {
+    let toast = document.getElementById('toast-notification');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-notification';
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+    }
+    toast.innerText = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Яндекс Карта
+function initMap() {
+    if (document.getElementById('map').innerHTML !== "") return;
+    const myMap = new ymaps.Map("map", {
+        center: [59.935634, 30.325916],
+        zoom: 14
+    });
+    const myPlacemark = new ymaps.Placemark([59.935634, 30.325916], {
+        balloonContentHeader: "CozyBooks",
+        balloonContentBody: "Санкт-Петербург, Невский пр. 28",
+        balloonContentFooter: "Ждем вас ежедневно!"
+    });
+    myMap.geoObjects.add(myPlacemark);
+}
+
+// Фильтры
+function setupFilters() {
+    const g = document.getElementById('genreFilter');
+    const p = document.getElementById('priceSort');
+    if (g && p) {
+        const apply = () => {
+            let f = [...allBooks];
+            if (g.value !== 'all') f = f.filter(b => b.genre === g.value);
+            if (p.value === 'asc') f.sort((a, b) => a.price - b.price);
+            if (p.value === 'desc') f.sort((a, b) => b.price - a.price);
+            renderBooks(f);
+        };
+        g.onchange = apply; p.onchange = apply;
+    }
+}
+
+// Авторизация и Выход
+function checkAuthStatus() {
+    const authLink = document.getElementById('authLink');
+    if (authLink && currentUser) {
+        authLink.innerText = currentUser + " (Выход)";
+        authLink.href = "#";
+        authLink.onclick = (e) => {
+            e.preventDefault();
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('currentUserId');
+            location.reload();
+        };
+    }
+}
+
+// Вход/регистрация
 const authForm = document.getElementById('authForm');
 if (authForm) {
     let isLogin = true;
@@ -301,42 +329,29 @@ if (authForm) {
         const p = document.getElementById('password').value;
         const endpoint = isLogin ? '/api/login' : '/api/register';
 
-        const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ username: u, password: p })
-        });
-        const data = await res.json();
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: u, password: p })
+            });
+            const data = await res.json();
 
-        if (res.ok) {
-            if (isLogin) {
-                localStorage.setItem('currentUser', data.username);
-                localStorage.setItem('currentUserId', data.userId);
-                window.location.href = 'index.html';
+            if (res.ok) {
+                if (isLogin) {
+                    localStorage.setItem('currentUser', data.username);
+                    localStorage.setItem('currentUserId', data.userId);
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Успех! Теперь войдите.');
+                    window.location.reload();
+                }
             } else {
-                alert('Успех! Теперь войдите.');
-                window.location.reload();
+                document.getElementById('message').innerText = data.error;
             }
-        } else {
-            document.getElementById('message').innerText = data.error;
+        } catch (err) {
+            console.error(err);
+            document.getElementById('message').innerText = "Ошибка сервера";
         }
     });
-    // Функция для уведомления
-function showToast(message) {
-    let toast = document.getElementById('toast-notification');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toast-notification';
-        toast.className = 'toast';
-        document.body.appendChild(toast);
-    }
-    
-    toast.innerText = message;
-    toast.classList.add('show');
-
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
-}
 }
