@@ -1,12 +1,8 @@
-
 let allBooks = [];
 const currentUser = localStorage.getItem('currentUser');
 const currentUserId = localStorage.getItem('currentUserId');
 
-
 const cartKey = currentUserId ? `cart_user_${currentUserId}` : 'cart_guest';
-
-
 let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
 
 // ==========================================
@@ -15,23 +11,19 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartCounter();
     checkAuthStatus();
 
-
     if (document.getElementById('booksContainer')) {
         fetchBooks();
         setupFilters();
     }
 
-
     if (document.getElementById('productPage')) {
         loadProductPage();
     }
-
 
     if (document.getElementById('cartContainer')) {
         renderCartPage();
         setupCheckoutModal();
     }
-
 
     if (document.getElementById('map')) {
         ymaps.ready(initMap);
@@ -59,14 +51,19 @@ function renderBooks(books) {
     books.forEach(book => {
         const card = document.createElement('div');
         card.className = 'book-card';
+        // HTML структура подстроена под CSS flex:
+        // .book-price имеет margin-top: auto, чтобы оттолкнуться от автора, 
+        // и margin-bottom: 20px, чтобы быть посередине между автором и кнопкой
         card.innerHTML = `
             <div class="book-cover">
                 <img src="${book.image}" alt="${book.title}" onerror="this.src='https://dummyimage.com/400x600/ccc/fff&text=No+Image'">
             </div>
             <div class="book-title">${book.title}</div>
             <div class="book-author">${book.author}</div>
+            
             <div class="book-price">${book.price} ₽</div>
-            <div class="card-buttons" style="margin-top: auto;">
+            
+            <div class="card-buttons">
                  <button class="btn-main" onclick="addToCart(${book.id})" style="width: 100%;">В корзину</button>
             </div>
         `;
@@ -85,7 +82,6 @@ async function loadProductPage() {
     }
 
     try {
-
         const res = await fetch(`/api/books/${id}`);
         if (!res.ok) throw new Error('Книга не найдена');
         const book = await res.json();
@@ -114,7 +110,6 @@ async function loadProductPage() {
     }
 }
 
-
 function saveCartToStorage() {
     localStorage.setItem(cartKey, JSON.stringify(cart));
     updateCartCounter();
@@ -125,7 +120,6 @@ function addToCart(bookId) {
         const book = allBooks.find(b => b.id === parseInt(bookId));
         if (book) pushToCart(book);
     } else {
-       
         fetch(`/api/books/${bookId}`)
             .then(res => res.json())
             .then(book => pushToCart(book));
@@ -144,9 +138,18 @@ function removeFromCart(index) {
     renderCartPage();    
 }
 
+// --- ЛОГИКА СЧЕТЧИКА КОРЗИНЫ ---
 function updateCartCounter() {
     const el = document.getElementById('cart-count');
-    if (el) el.innerText = cart.length;
+    if (el) {
+        // Если корзина пуста (0), скрываем (none), иначе показываем (inline-block)
+        if (cart.length === 0) {
+            el.style.display = 'none';
+        } else {
+            el.style.display = 'inline-block';
+            el.innerText = cart.length;
+        }
+    }
 }
 
 function renderCartPage() {
@@ -178,7 +181,7 @@ function renderCartPage() {
     cart.forEach((book, index) => {
         total += book.price;
         const row = document.createElement('div');
-        row.className = 'cart-item-card'; // CSS класс из style.css
+        row.className = 'cart-item-card'; 
         row.innerHTML = `
             <img src="${book.image}" class="cart-item-img" alt="${book.title}" onerror="this.src='https://dummyimage.com/400x600/ccc/fff&text=No+Image'">
             <div class="cart-item-info">
@@ -195,7 +198,6 @@ function renderCartPage() {
 
     if (totalEl) totalEl.innerText = total;
 }
-
 
 function setupCheckoutModal() {
     const modal = document.getElementById('checkoutModal');
@@ -231,7 +233,6 @@ function setupCheckoutModal() {
                 body: JSON.stringify(data)
             });
 
-
             alert('Заказ оформлен! Менеджер свяжется с вами.');
 
             cart = []; 
@@ -245,7 +246,6 @@ function setupCheckoutModal() {
     };
 }
 
-// Всплывающее уведомление
 function showToast(message) {
     let toast = document.getElementById('toast-notification');
     if (!toast) {
@@ -261,7 +261,6 @@ function showToast(message) {
     }, 3000);
 }
 
-// Яндекс Карта
 function initMap() {
     if (document.getElementById('map').innerHTML !== "") return;
     const myMap = new ymaps.Map("map", {
@@ -276,7 +275,6 @@ function initMap() {
     myMap.geoObjects.add(myPlacemark);
 }
 
-// Фильтры
 function setupFilters() {
     const g = document.getElementById('genreFilter');
     const p = document.getElementById('priceSort');
@@ -292,7 +290,6 @@ function setupFilters() {
     }
 }
 
-// Авторизация и Выход
 function checkAuthStatus() {
     const authLink = document.getElementById('authLink');
     if (authLink && currentUser) {
@@ -307,13 +304,14 @@ function checkAuthStatus() {
     }
 }
 
-// Вход/регистрация
+// --- ЛОГИКА ВХОДА И РЕГИСТРАЦИИ ---
 const authForm = document.getElementById('authForm');
 if (authForm) {
     let isLogin = true;
     const toggleBtn = document.getElementById('toggleAuth');
     const title = document.getElementById('formTitle');
     const sBtn = document.getElementById('submitBtn');
+    const passConfirm = document.getElementById('passwordConfirm');
 
     toggleBtn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -321,12 +319,24 @@ if (authForm) {
         title.innerText = isLogin ? "Вход" : "Регистрация";
         sBtn.innerText = isLogin ? "Войти" : "Создать аккаунт";
         toggleBtn.innerText = isLogin ? "Нет аккаунта? Зарегистрироваться" : "Есть аккаунт? Войти";
+        
+        // Показываем или скрываем второе поле пароля
+        passConfirm.style.display = isLogin ? 'none' : 'block';
+        passConfirm.required = !isLogin;
     });
 
     authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const u = document.getElementById('username').value;
         const p = document.getElementById('password').value;
+        const pConf = passConfirm.value;
+
+        // Проверка совпадения паролей при регистрации
+        if (!isLogin && p !== pConf) {
+            document.getElementById('message').innerText = "Пароли не совпадают!";
+            return;
+        }
+
         const endpoint = isLogin ? '/api/login' : '/api/register';
 
         try {
@@ -344,7 +354,9 @@ if (authForm) {
                     window.location.href = 'index.html';
                 } else {
                     alert('Успех! Теперь войдите.');
-                    window.location.reload();
+                    // Переключаемся обратно на вход
+                    toggleBtn.click();
+                    document.getElementById('message').innerText = "";
                 }
             } else {
                 document.getElementById('message').innerText = data.error;
