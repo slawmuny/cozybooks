@@ -1,3 +1,8 @@
+/* --- ГЛОБАЛЬНЫЕ НАСТРОЙКИ (Важно для ровности) --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 :root {
     --primary: #8ab6d6;       
     --primary-dark: #6fa0c4;  
@@ -7,7 +12,7 @@
     --text: #596e79;         
     --text-light: #9aaeb5;
     
-    --radius: 20px; /* Чуть увеличим скругление для мягкости */
+    --radius: 16px;
     --shadow: 0 10px 30px rgba(138, 182, 214, 0.15); 
 }
 
@@ -21,7 +26,7 @@ body {
     min-height: 100vh;
 }
 
-/* --- СТИЛИ ДЛЯ СЧЕТЧИКА КОРЗИНЫ --- */
+/* Счетчик корзины */
 #cart-count {
     background-color: var(--primary);
     color: white;
@@ -69,7 +74,7 @@ nav a {
 }
 nav a:hover, nav a.active { color: var(--primary); font-weight: 600; }
 
-/* Hero section */
+/* Hero Block */
 .hero-wrapper {
     background: linear-gradient(135deg, #fdfbf7 0%, #eef6fa 100%);
     padding: 60px 20px;
@@ -91,7 +96,6 @@ nav a:hover, nav a.active { color: var(--primary); font-weight: 600; }
 .hero-logo-large svg path[fill="#54a0ff"] { fill: var(--primary); }
 .hero-logo-large svg path[fill="#2e86de"] { fill: var(--primary-dark); }
 
-/* Кнопки */
 .btn-main {
     background-color: var(--primary);
     color: white;
@@ -112,31 +116,28 @@ nav a:hover, nav a.active { color: var(--primary); font-weight: 600; }
     display: flex; 
     justify-content: center; 
     gap: 15px; 
-    margin: 30px 0 50px; /* Больше отступа снизу */
+    margin: 30px 0 50px; 
     flex-wrap: wrap; 
 }
 select {
     padding: 12px 24px; 
     border: 1px solid #dae1e7; 
-    border-radius: 30px; /* Более округлые фильтры */
+    border-radius: 30px; 
     background-color: white; 
     color: var(--text); 
     outline: none; 
     cursor: pointer;
     font-family: inherit;
     font-size: 14px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-    transition: 0.3s;
 }
 select:hover { border-color: var(--primary); }
-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(138, 182, 214, 0.2); }
 
-/* --- ОБНОВЛЕННАЯ СЕТКА КАТАЛОГА (РАВНЕЕ) --- */
+/* --- ИСПРАВЛЕННАЯ СЕТКА КАТАЛОГА --- */
 .grid-container {
     display: grid;
-    /* Увеличили минимальную ширину до 260px, чтобы карточки были солиднее */
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
-    gap: 40px; /* Больше воздуха между карточками */
+    /* Фиксируем минимальную ширину карточки в 250px. 1fr растянет их равномерно */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+    gap: 30px;
     max-width: 1200px;
     margin: 0 auto 80px;
     padding: 0 20px;
@@ -145,100 +146,93 @@ select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(138, 182
 .book-card {
     background: var(--card-bg);
     border-radius: var(--radius);
-    padding: 25px;
+    padding: 20px;
     display: flex;
-    flex-direction: column;
-    text-align: center; /* Центрируем всё содержимое */
+    flex-direction: column; /* Элементы друг под другом */
+    height: 100%; /* Растягиваем карточку на всю высоту ряда сетки */
     box-shadow: 0 5px 20px rgba(0,0,0,0.03);
     transition: transform 0.3s, box-shadow 0.3s;
-    border: 1px solid transparent; /* Для плавности перехода границы */
-    height: 100%;
-    position: relative;
-    overflow: hidden; /* Чтобы картинка не вылезала при зуме */
+    border: 1px solid transparent;
 }
 
 .book-card:hover { 
-    transform: translateY(-7px); 
+    transform: translateY(-5px); 
     box-shadow: var(--shadow); 
-    border-color: #f0f4f8;
 }
 
-/* Обложка книги */
+/* 1. Картинка фиксированной высоты */
 .book-cover { 
-    height: 340px; /* Чуть выше */
+    height: 320px; 
+    width: 100%;
     border-radius: 12px; 
     overflow: hidden; 
-    margin-bottom: 20px; 
-    background: #f4f4f4; 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05); /* Легкая тень самой картинке */
+    margin-bottom: 15px; 
+    background: #f4f4f4;
+    flex-shrink: 0; /* Запрещаем сжимать картинку */
 }
 
 .book-cover img { 
     width: 100%; 
     height: 100%; 
     object-fit: cover; 
-    transition: transform 0.5s ease; /* Плавный зум */
 }
 
-.book-card:hover .book-cover img {
-    transform: scale(1.05); /* Эффект приближения при наведении */
-}
-
-/* Типографика карточки */
+/* 2. Заголовок фиксированной высоты (самое важное для ровности) */
 .book-title { 
     font-weight: 700; 
-    font-size: 1.15rem; 
+    font-size: 1.1rem; 
     color: var(--text);
-    margin-bottom: 8px;
-    line-height: 1.4;
+    margin-bottom: 5px;
+    text-align: center;
     
-    /* Ограничение в 2 строки, чтобы карточки были одной высоты */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    /* Заставляем заголовок всегда занимать 2.6 строки по высоте */
+    height: 2.6em; 
+    line-height: 1.3;
     overflow: hidden;
-    min-height: 2.8em; /* Фиксируем высоту заголовка (2 строки) */
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    
+    /* Если название длинное - ставим троеточие */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
 }
 
+/* 3. Автор */
 .book-author { 
-    font-size: 0.95rem; 
+    font-size: 0.9rem; 
     color: var(--text-light); 
-    margin-bottom: 0; /* Отступ теперь регулируется flex-gap или margin-top цены */
-    
-    /* Ограничение в 1 строку */
-    white-space: nowrap;
+    margin-bottom: 0; 
+    text-align: center;
+    white-space: nowrap; /* Автор всегда в одну строку */
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* Цена ровно посередине между автором и кнопкой */
+/* 4. Цена прижата к низу (между автором и кнопкой) */
 .book-price { 
-    font-size: 1.3rem; 
+    font-size: 1.25rem; 
     font-weight: 700; 
     color: var(--accent);
+    text-align: center;
     
-    /* Техника выравнивания */
-    margin-top: auto;    /* Толкает цену вниз от автора */
-    margin-bottom: 20px; /* Фиксированный отступ до кнопки */
-    padding-top: 20px;   /* Отступ от автора */
+    /* Магия выравнивания: margin-top: auto толкает цену вниз от автора */
+    margin-top: auto; 
+    /* Отступ от кнопки */
+    margin-bottom: 15px; 
+    /* Отступ от автора */
+    padding-top: 15px; 
 }
 
+/* 5. Кнопка в самом низу */
 .card-buttons { 
-    display: flex; 
     width: 100%;
+    margin-top: 0; /* Отступ уже задан у цены снизу */
 }
-
 .card-buttons button {
     width: 100%;
     border-radius: 12px;
 }
 
-/* --- КОНЕЦ СТИЛЕЙ КАТАЛОГА --- */
-
-/* Страница товара */
+/* --- ОСТАЛЬНЫЕ СТИЛИ (без изменений) --- */
 .product-container {
     max-width: 1000px; margin: 40px auto;
     background: var(--card-bg); padding: 45px;
