@@ -19,15 +19,20 @@
         </nav>
     </header>
 
-    <!-- Новый контейнер для центрирования формы -->
     <div class="auth-wrapper">
         <div class="auth-card">
             <div class="auth-icon">🔐</div>
             <h2 id="formTitle" style="color: var(--primary-dark); margin-bottom: 25px;">Вход</h2>
             
             <form id="authForm">
-                <input type="text" id="username" placeholder="Ваш логин" required>
+                <!-- Изменил placeholder и тип на email -->
+                <input type="email" id="username" placeholder="Ваша почта (Email)" required>
+                
                 <input type="password" id="password" placeholder="Пароль" required>
+                
+                <!-- Поле для повтора пароля (скрыто по умолчанию) -->
+                <input type="password" id="passwordConfirm" placeholder="Повторите пароль" style="display: none;">
+                
                 <button type="submit" id="submitBtn" class="btn-main" style="width: 100%; margin-top: 15px;">Войти</button>
             </form>
 
