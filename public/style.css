@@ -400,3 +400,38 @@ input:focus {
     .cart-item-img { margin: 0 0 15px 0; }
     .cart-item-right { flex-direction: column; width: 100%; margin-top: 15px; }
 }
+/* Добавить в самый низ style.css */
+
+@media (max-width: 768px) {
+    /* Перестраиваем шапку вертикально */
+    header {
+        flex-direction: column;
+        padding: 15px 20px;
+    }
+
+    /* Убираем отступы у ссылок и делаем их блочными или гибкими */
+    nav {
+        display: flex;
+        flex-wrap: wrap; /* Разрешаем перенос на след. строку */
+        justify-content: center; /* По центру */
+        gap: 15px; /* Отступ между ссылками */
+        margin-top: 15px;
+    }
+
+    nav a {
+        margin-left: 0; /* Убираем старый отступ слева */
+        font-size: 14px; /* Чуть меньше шрифт */
+    }
+    
+    /* Уменьшаем Hero-блок (где "Уютные книги") */
+    .hero-text h1 {
+        font-size: 2rem; /* Уменьшаем заголовок */
+    }
+    
+    /* Уменьшаем размер логотипа в Hero */
+    .hero-logo-large svg {
+        width: 200px;
+        height: 200px;
+    }
+}
+
