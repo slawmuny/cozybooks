@@ -30,16 +30,11 @@
             </div>
             
             <div class="hero-logo-large">
-                <!-- ФИРМЕННЫЙ ЛОГОТИП САЙТА (SVG) -->
                 <svg width="300" height="300" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Круглый фон -->
                     <circle cx="100" cy="100" r="90" fill="#ffffff" stroke="#8ab6d6" stroke-width="5"/>
-                    <!-- Книга -->
                     <path d="M50 80 Q100 90 150 80 L150 140 Q100 150 50 140 Z" fill="#eef6fa" stroke="#596e79" stroke-width="3"/>
                     <path d="M100 90 L100 150" stroke="#596e79" stroke-width="3"/>
-                    <!-- Текст на логотипе -->
                     <text x="100" y="180" font-family="Montserrat, sans-serif" font-size="20" font-weight="bold" fill="#596e79" text-anchor="middle">COZY BOOKS</text>
-                    <!-- Декор (закладка) -->
                     <rect x="120" y="80" width="15" height="40" fill="#e6b89c"/>
                     <polygon points="120,120 127.5,110 135,120" fill="#e6b89c"/>
                 </svg>
@@ -47,23 +42,16 @@
         </div>
     </div>
 
-    <!-- Блок преимуществ -->
-    <div style="max-width:1000px; margin: 0 auto; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-        <div style="background:white; padding:20px; border-radius:15px; flex:1; min-width:200px; text-align:center; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-            <div style="font-size:30px;">🚀</div>
-            <h3>Быстро</h3>
-            <p style="color:#888;">Доставка за 2 часа</p>
-        </div>
-        <div style="background:white; padding:20px; border-radius:15px; flex:1; min-width:200px; text-align:center; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-            <div style="font-size:30px;">🛡️</div>
-            <h3>Надежно</h3>
-            <p style="color:#888;">Качественная упаковка</p>
-        </div>
-        <div style="background:white; padding:20px; border-radius:15px; flex:1; min-width:200px; text-align:center; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-            <div style="font-size:30px;">💙</div>
-            <h3>С любовью</h3>
-            <p style="color:#888;">Забота о каждом клиенте</p>
-        </div>
+    <!-- ЗАМЕНЕННЫЙ БЛОК -->
+    <div style="max-width:1000px; margin: 0 auto 60px; padding: 40px; background: #eef6fa; border-radius: 20px; text-align: center;">
+        <h2 style="color: var(--primary-dark); margin-bottom: 15px;">Книжный клуб</h2>
+        <p style="color: var(--text); max-width: 600px; margin: 0 auto 25px;">
+            Присоединяйтесь к нашему сообществу читателей. Мы делимся рецензиями, проводим встречи и дарим скидки подписчикам.
+        </p>
+        <form style="max-width: 400px; margin: 0 auto; display: flex; gap: 10px;">
+            <input type="email" placeholder="Ваша почта" style="margin: 0; flex: 1;">
+            <button class="btn-main" style="border-radius: 12px; padding: 0 25px;">Подписаться</button>
+        </form>
     </div>
 
     <script src="script.js"></script>
