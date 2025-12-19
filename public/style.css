@@ -400,3 +400,62 @@ input:focus {
     .cart-item-img { margin: 0 0 15px 0; }
     .cart-item-right { flex-direction: column; width: 100%; margin-top: 15px; }
 }
+/* --- АДАПТИВ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ --- */
+@media (max-width: 768px) {
+    /* 1. Запрещаем горизонтальную прокрутку */
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+        position: relative;
+    }
+
+    /* 2. Перестраиваем шапку вертикально */
+    header {
+        flex-direction: column; /* Логотип сверху, меню снизу */
+        padding: 15px 10px;     /* Уменьшаем отступы по бокам */
+        align-items: center;    /* Центрируем логотип */
+    }
+
+    /* 3. Настраиваем контейнер ссылок */
+    nav {
+        width: 100%;            /* Заставляем занять всю ширину */
+        display: flex;
+        flex-wrap: wrap;        /* Разрешаем перенос ссылок на след. строку */
+        justify-content: center;/* Центрируем ссылки */
+        gap: 15px;              /* Отступ между ссылками */
+        margin-top: 20px;       /* Отступ от логотипа сверху */
+    }
+
+    /* 4. Настраиваем сами ссылки */
+    nav a {
+        margin-left: 0;         /* Убираем старый отступ слева */
+        font-size: 14px;        /* Размер шрифта для телефона */
+        white-space: nowrap;    /* Запрещаем разрыв слов внутри ссылки */
+        padding: 5px 0;         /* Увеличиваем зону клика */
+    }
+
+    /* 5. Адаптация сетки товаров в каталоге */
+    .grid-container {
+        grid-template-columns: 1fr; /* Одна колонка */
+        padding: 0 15px;            /* Отступы от краев экрана */
+        margin-bottom: 40px;
+    }
+    
+    .book-card {
+        margin: 0 auto;         /* Центрируем карточку */
+        max-width: 100%;        /* Не шире экрана */
+    }
+
+    /* 6. Фильтры в каталоге (чтобы не уезжали) */
+    .filters {
+        flex-direction: column; /* Фильтры друг под другом */
+        align-items: center;
+        gap: 15px;
+    }
+    
+    select {
+        width: 100%;            /* Растягиваем селекты */
+        max-width: 300px;
+    }
+}
+
